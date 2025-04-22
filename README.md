@@ -1,6 +1,6 @@
 # SD-Comfy-Forge
 
-A unified Docker-based environment for running [ComfyUI](https://github.com/comfyanonymous/ComfyUI) and [Stable Diffusion WebUI Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge) with shared models and outputs. Optimized for NVIDIA RTX 50xx GPUs (CUDA 12.8).
+A unified Docker-based environment for running [ComfyUI](https://github.com/comfyanonymous/ComfyUI) and [Stable Diffusion WebUI Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge) with shared models and outputs. Optimized for NVIDIA RTX 50xx GPUs (CUDA 12.8) and includes built-in [xformers](https://github.com/facebookresearch/xformers) support for improved performance.
 
 
 
