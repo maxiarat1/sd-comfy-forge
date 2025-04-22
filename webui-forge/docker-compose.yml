@@ -1,0 +1,28 @@
+services:
+  forge:
+    container_name: sd-forge
+    build: .
+    image: sd-cu128-forge
+    runtime: nvidia
+    gpus: all
+    ipc: host
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      stack:
+        soft: 67108864
+        hard: 67108864
+    ports:
+      - "7860:7860"
+    volumes:
+      - sd-shared-models:/opt/sd-webui-forge/models
+      - sd-shared-output:/opt/sd-webui-forge/outputs
+      - sd-forge:/opt/sd-webui-forge
+volumes:
+  sd-shared-models:
+    external: true
+  sd-shared-output:
+    external: true
+  sd-forge:
+    external: true
