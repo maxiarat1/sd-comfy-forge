@@ -37,28 +37,18 @@ if ($LASTEXITCODE -ne 0) {
                  mkdir -p /opt/sd-webui-forge && \
                  cp -a /tmp/forge/. /opt/sd-webui-forge/"
     Write-Host " → Seed complete."
-
-    Write-Host "`n🛠 Creating model directories and symlinks in 'sd-shared-models'..."
-    docker run --rm `
-        -v sd-forge:/opt/sd-webui-forge `
-        -v sd-shared-models:/opt/sd-webui-forge/models `
-        python:3.10-slim bash -c "
-            mkdir -p /opt/sd-webui-forge/models/{VAE,Lora,ControlNet,ESRGAN,Stable-diffusion,BLIP,Codeformer,GFPGAN,RealESRGAN,hypernetworks,embeddings,vae,loras,controlnet,upscale_models,checkpoints,clip,clip_vision,configs,consistency_models,diffusers,diffusion_models,embedding,gligen,ip_adapter,karlo,motion_lora,other,photomaker,style_models,svd,t2i_adapter,text_encoder,text_encoders,unet,vae_approx,z123,VAE-approx,ControlNetPreprocessor} && \
-            ln -sf /opt/sd-webui-forge/models/vae/* /opt/sd-webui-forge/models/VAE/ 2>/dev/null || true && \
-            ln -sf /opt/sd-webui-forge/models/loras/* /opt/sd-webui-forge/models/Lora/ 2>/dev/null || true && \
-            ln -sf /opt/sd-webui-forge/models/controlnet/* /opt/sd-webui-forge/models/ControlNet/ 2>/dev/null || true && \
-            ln -sf /opt/sd-webui-forge/models/upscale_models/* /opt/sd-webui-forge/models/ESRGAN/ 2>/dev/null || true && \
-            ln -sf /opt/sd-webui-forge/models/checkpoints/* /opt/sd-webui-forge/models/Stable-diffusion/ 2>/dev/null || true && \
-            ln -sf /opt/sd-webui-forge/models/embeddings/* /opt/sd-webui-forge/models/embedding/ 2>/dev/null || true
-        "
-
-    Write-Host "`n🧹 Cleaning up seeding image..."
-    docker image rm python:3.10-slim -f
-
-} else {
-    Write-Host " • Already seeded."
-    docker image rm python:3.10-slim -f
 }
+
+Write-Host "`n🛠 Cleaning up old symlinks and creating model directories/symlinks in 'sd-shared-models'..."
+docker run --rm `
+  -v sd-forge:/opt/sd-webui-forge `
+  -v sd-shared-models:/opt/sd-webui-forge/models `
+  python:3.10-slim `
+  bash -c 'set -e; for d in VAE Lora ControlNet ESRGAN Stable-diffusion embeddings embedding; do [ -d "/opt/sd-webui-forge/models/$d" ] && find "/opt/sd-webui-forge/models/$d" -type l -delete 2>/dev/null; done; mkdir -p /opt/sd-webui-forge/models/{VAE,Lora,ControlNet,ESRGAN,Stable-diffusion,BLIP,Codeformer,GFPGAN,RealESRGAN,hypernetworks,embeddings,vae,loras,controlnet,upscale_models,checkpoints,clip,clip_vision,configs,consistency_models,diffusers,diffusion_models,embedding,gligen,ip_adapter,karlo,motion_lora,other,photomaker,style_models,svd,t2i_adapter,text_encoder,text_encoders,unet,vae_approx,z123,VAE-approx,ControlNetPreprocessor}; for pair in vae:VAE loras:Lora controlnet:ControlNet upscale_models:ESRGAN checkpoints:Stable-diffusion embeddings:embedding; do src=${pair%:*}; dst=${pair#*:}; for f in /opt/sd-webui-forge/models/$src/*; do [ -e "$f" ] && [ ! -L "/opt/sd-webui-forge/models/$dst/${f##*/}" ] && ln -sf "$f" "/opt/sd-webui-forge/models/$dst/${f##*/}"; done; done'
+
+
+Write-Host "`n🧹 Cleaning up seeding image..."
+docker image rm python:3.10-slim -f
 
 # 4) Build
 Write-Host "`n🟢 Building Docker image..."

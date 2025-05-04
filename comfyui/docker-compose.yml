@@ -19,7 +19,7 @@ services:
       - sd-shared-models:/opt/ComfyUI/models
       - sd-shared-output:/opt/ComfyUI/output
       - sd-comfyui:/opt/ComfyUI
-    
+
 volumes:
   sd-shared-models:
     external: true

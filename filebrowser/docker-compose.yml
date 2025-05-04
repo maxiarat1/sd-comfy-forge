@@ -1,0 +1,23 @@
+services:
+  filebrowser:
+    container_name: sd-filebrowser
+    image: filebrowser/filebrowser
+    ports:
+      - "8080:8080"
+    command: ["--port", "8080"]
+    volumes:
+      - sd-shared-models:/srv/models
+      - sd-shared-output:/srv/output
+      - ./filebrowser.db:/database/filebrowser.db
+    environment:
+      FB_BASEURL: "/filebrowser"
+
+volumes:
+  sd-shared-models:
+    external: true
+    name: sd-shared-models
+  sd-shared-output:
+    external: true
+    name: sd-shared-output
+  file-browser:
+    name: file-browser

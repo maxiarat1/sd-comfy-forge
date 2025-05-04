@@ -37,27 +37,18 @@ if ($LASTEXITCODE -ne 0) {
                  mkdir -p /opt/ComfyUI && \
                  cp -a /tmp/ComfyUI/. /opt/ComfyUI/"
     Write-Host " → Seed complete."
-
-    Write-Host "`n🛠 Creating model directories and symlinks in 'sd-shared-models' for ComfyUI..."
-    docker run --rm `
-        -v sd-comfyui:/opt/ComfyUI `
-        -v sd-shared-models:/opt/ComfyUI/models `
-        python:3.10-slim bash -c "
-            mkdir -p /opt/ComfyUI/models/{checkpoints,vae,loras,controlnet,clip,text_encoder,upscale_models,embeddings} && \
-            ln -sf /opt/ComfyUI/models/vae/* /opt/ComfyUI/models/VAE/ 2>/dev/null || true && \
-            ln -sf /opt/ComfyUI/models/loras/* /opt/ComfyUI/models/Lora/ 2>/dev/null || true && \
-            ln -sf /opt/ComfyUI/models/controlnet/* /opt/ComfyUI/models/ControlNet/ 2>/dev/null || true && \
-            ln -sf /opt/ComfyUI/models/upscale_models/* /opt/ComfyUI/models/ESRGAN/ 2>/dev/null || true && \
-            ln -sf /opt/ComfyUI/models/checkpoints/* /opt/ComfyUI/models/Stable-diffusion/ 2>/dev/null || true && \
-            ln -sf /opt/ComfyUI/models/embeddings/* /opt/ComfyUI/models/embedding/ 2>/dev/null || true
-        "
-
-    Write-Host "`n🧹 Cleaning up seeding image..."
-    docker image rm python:3.10-slim -f
-} else {
-    Write-Host " • Already seeded."
-    docker image rm python:3.10-slim -f
 }
+
+Write-Host "`n🛠 Cleaning up old symlinks and creating model directories/symlinks in 'sd-shared-models' for ComfyUI..."
+docker run --rm `
+  -v sd-comfyui:/opt/ComfyUI `
+  -v sd-shared-models:/opt/ComfyUI/models `
+  python:3.10-slim `
+  bash -c 'set -e; for d in VAE Lora ControlNet ESRGAN Stable-diffusion embedding; do [ -d "/opt/ComfyUI/models/$d" ] && find "/opt/ComfyUI/models/$d" -type l -delete 2>/dev/null; done; mkdir -p /opt/ComfyUI/models/{checkpoints,vae,loras,controlnet,upscale_models,embeddings,VAE,Lora,ControlNet,ESRGAN,Stable-diffusion,embedding,clip,text_encoder}; for pair in vae:VAE loras:Lora controlnet:ControlNet upscale_models:ESRGAN checkpoints:Stable-diffusion embeddings:embedding; do src=${pair%:*}; dst=${pair#*:}; for f in /opt/ComfyUI/models/$src/*; do [ -e "$f" ] && [ ! -L "/opt/ComfyUI/models/$dst/${f##*/}" ] && ln -sf "$f" "/opt/ComfyUI/models/$dst/${f##*/}"; done; done'
+
+
+Write-Host "`n🧹 Cleaning up seeding image..."
+docker image rm python:3.10-slim -f
 
 # 4) Build
 Write-Host "`n🟢 Building Docker image..."

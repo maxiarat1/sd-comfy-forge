@@ -88,6 +88,14 @@ These scripts will:
 - `sd-comfyui` / `sd-forge`: Persistent storage for each UI's code and configs.
 
 
+## File Management (File Browser)
+
+A web-based file manager is included for uploading, deleting, renaming, previewing, and editing files in your shared model/output directories.
+
+**To start File Browser:**
+
+
+
 ## License
 
 This project provides Docker orchestration and setup scripts. The UIs themselves are under their respective upstream licenses.

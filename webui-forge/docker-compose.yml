@@ -19,6 +19,7 @@ services:
       - sd-shared-models:/opt/sd-webui-forge/models
       - sd-shared-output:/opt/sd-webui-forge/outputs
       - sd-forge:/opt/sd-webui-forge
+
 volumes:
   sd-shared-models:
     external: true
