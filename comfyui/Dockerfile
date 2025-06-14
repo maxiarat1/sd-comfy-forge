@@ -28,8 +28,8 @@
     RUN python3 -m pip install --upgrade pip setuptools wheel
     
     # Install PyTorch nightly with CUDA 12.8 support
-    RUN pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
-    
+    RUN pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+
     # Clone xFormers repository with submodules
     RUN git clone --recursive https://github.com/facebookresearch/xformers.git /xformers
     WORKDIR /xformers
@@ -51,7 +51,7 @@
 
     # install Python deps: torch nightly + all the rest (skip torchvision/torchaudio)
     RUN pip install --upgrade pip && \
-        pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 && \
+        pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 && \
         grep -vE 'torchvision|torchaudio' requirements.txt > reqs.tmp && \
         pip install -r reqs.tmp && \
         rm reqs.tmp
